@@ -1,12 +1,11 @@
 import streamlit as st
-from multiapp import MultiApp
 from db import database
 import pandas as pd
 from hash import hash
 from algorithms import equal_weight_SnP_500, momentum_strategy, value_strategy
+import stock
 
 def main():
-    app = MultiApp()
 
     st.title("Algo Trading")
 
@@ -17,6 +16,7 @@ def main():
 
     if choice == "Home":
         st.subheader("Home")
+        stock.main()
 
     elif choice == "Login":
         st.subheader("Login Section")
@@ -62,14 +62,6 @@ def main():
             db.add_userdata(new_user, hashing.make_hashes(new_password))
             st.success("You have successfully created a valid Account")
             st.info("Go to Login Menu to login")
-
-    # Add all your application here
-    # app.add_app("Home", home.app)
-    # app.add_app("Data", data.app)
-    # app.add_app("Model", model.app)
-
-    # app.run()
-
 
 if __name__ == '__main__':
     main()
