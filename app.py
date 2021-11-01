@@ -1,6 +1,5 @@
 import streamlit as st
 from multiapp import MultiApp
-from apps import home, data, model 
 from db import database
 import pandas as pd
 from hash import hash
