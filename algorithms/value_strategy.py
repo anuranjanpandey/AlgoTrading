@@ -35,15 +35,17 @@ def main():
         batch_api_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch/?types=quote&symbols={symbol_string}&token={IEX_CLOUD_API_TOKEN}'
         data = requests.get(batch_api_call_url).json()
         for symbol in symbol_string.split(','):
-            final_dataframe = final_dataframe.append(
-                                            pd.Series([symbol, 
-                                                    data[symbol]['quote']['latestPrice'],
-                                                    data[symbol]['quote']['peRatio'],
-                                                    'N/A'
-                                                    ], 
-                                                    index = my_columns), 
-                                            ignore_index = True)
-            
+            try:
+                final_dataframe = final_dataframe.append(
+                                                pd.Series([symbol, 
+                                                        data[symbol]['quote']['latestPrice'],
+                                                        data[symbol]['quote']['peRatio'],
+                                                        'N/A'
+                                                        ], 
+                                                        index = my_columns), 
+                                                ignore_index = True)
+            except KeyError:
+                pass
         
     final_dataframe.sort_values('Price-to-Earnings Ratio', inplace=True)
     final_dataframe = final_dataframe[final_dataframe['Price-to-Earnings Ratio'] > 0]
@@ -96,38 +98,41 @@ def main():
         batch_api_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch/?types=advanced-stats,quote&symbols={symbol_string}&token={IEX_CLOUD_API_TOKEN}'
         data = requests.get(batch_api_call_url).json()
         for symbol in symbol_string.split(','):
-            enterprise_value = data[symbol]['advanced-stats']['enterpriseValue']
-            ebitda = data[symbol]['advanced-stats']['EBITDA']
-            gross_profit = data[symbol]['advanced-stats']['grossProfit']
-            
             try:
-                ev_to_ebitda = enterprise_value/ebitda
-            except TypeError:
-                ev_to_ebitda = np.NaN
-            
-            try:
-                ev_to_gross_profit = enterprise_value/gross_profit
-            except TypeError:
-                ev_to_gross_profit = np.NaN
-            
-            rv_dataframe = rv_dataframe.append(
-                pd.Series([
-                    symbol,
-                    data[symbol]['quote']['latestPrice'],
-                    'N/A',
-                    data[symbol]['quote']['peRatio'],
-                    'N/A',
-                    data[symbol]['advanced-stats']['priceToBook'],
-                    'N/A',
-                    data[symbol]['advanced-stats']['priceToSales'],
-                    'N/A',
-                    ev_to_ebitda,
-                    'N/A',
-                    ev_to_gross_profit,
-                    'N/A',
-                    'N/A'
-                ], index=rv_columns),ignore_index=True
-            )
+                enterprise_value = data[symbol]['advanced-stats']['enterpriseValue']
+                ebitda = data[symbol]['advanced-stats']['EBITDA']
+                gross_profit = data[symbol]['advanced-stats']['grossProfit']
+                
+                try:
+                    ev_to_ebitda = enterprise_value/ebitda
+                except TypeError:
+                    ev_to_ebitda = np.NaN
+                
+                try:
+                    ev_to_gross_profit = enterprise_value/gross_profit
+                except TypeError:
+                    ev_to_gross_profit = np.NaN
+                
+                rv_dataframe = rv_dataframe.append(
+                    pd.Series([
+                        symbol,
+                        data[symbol]['quote']['latestPrice'],
+                        'N/A',
+                        data[symbol]['quote']['peRatio'],
+                        'N/A',
+                        data[symbol]['advanced-stats']['priceToBook'],
+                        'N/A',
+                        data[symbol]['advanced-stats']['priceToSales'],
+                        'N/A',
+                        ev_to_ebitda,
+                        'N/A',
+                        ev_to_gross_profit,
+                        'N/A',
+                        'N/A'
+                    ], index=rv_columns),ignore_index=True
+                )
+            except KeyError:
+                pass
 
 
 

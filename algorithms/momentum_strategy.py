@@ -34,14 +34,17 @@ def main():
         batch_api_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch/?types=stats,quote&symbols={symbol_string}&token={IEX_CLOUD_API_TOKEN}'
         data = requests.get(batch_api_call_url).json()
         for symbol in symbol_string.split(','):
-            final_dataframe = final_dataframe.append(
-                                            pd.Series([symbol, 
-                                                    data[symbol]['quote']['latestPrice'],
-                                                    data[symbol]['stats']['year1ChangePercent'],
-                                                    'N/A'
-                                                    ], 
-                                                    index = my_columns), 
-                                            ignore_index = True)
+            try:
+                final_dataframe = final_dataframe.append(
+                                                pd.Series([symbol, 
+                                                        data[symbol]['quote']['latestPrice'],
+                                                        data[symbol]['stats']['year1ChangePercent'],
+                                                        'N/A'
+                                                        ], 
+                                                        index = my_columns), 
+                                                ignore_index = True)
+            except KeyError:
+                pass
             
 
 
@@ -88,23 +91,25 @@ def main():
         batch_api_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch/?types=stats,quote&symbols={symbol_string}&token={IEX_CLOUD_API_TOKEN}'
         data = requests.get(batch_api_call_url).json()
         for symbol in symbol_string.split(','):
-            hqm_dataframe = hqm_dataframe.append(
-                                            pd.Series([symbol, 
-                                                    data[symbol]['quote']['latestPrice'],
-                                                    'N/A',
-                                                    data[symbol]['stats']['year1ChangePercent'],
-                                                    'N/A',
-                                                    data[symbol]['stats']['month6ChangePercent'],
-                                                    'N/A',
-                                                    data[symbol]['stats']['month3ChangePercent'],
-                                                    'N/A',
-                                                    data[symbol]['stats']['month1ChangePercent'],
-                                                    'N/A',
-                                                    'N/A'
-                                                    ], 
-                                                    index = hqm_columns), 
-                                            ignore_index = True)
-            
+            try:
+                hqm_dataframe = hqm_dataframe.append(
+                                                pd.Series([symbol, 
+                                                        data[symbol]['quote']['latestPrice'],
+                                                        'N/A',
+                                                        data[symbol]['stats']['year1ChangePercent'],
+                                                        'N/A',
+                                                        data[symbol]['stats']['month6ChangePercent'],
+                                                        'N/A',
+                                                        data[symbol]['stats']['month3ChangePercent'],
+                                                        'N/A',
+                                                        data[symbol]['stats']['month1ChangePercent'],
+                                                        'N/A',
+                                                        'N/A'
+                                                        ], 
+                                                        index = hqm_columns), 
+                                                ignore_index = True)
+            except KeyError:
+                pass
 
 
     time_periods = [

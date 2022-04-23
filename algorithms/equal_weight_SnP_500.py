@@ -39,13 +39,16 @@ def main():
         batch_api_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch/?types=quote&symbols={symbol_string}&token={IEX_CLOUD_API_TOKEN}'
         data = requests.get(batch_api_call_url).json()
         for symbol in symbol_string.split(','):
-            final_dataframe = final_dataframe.append(
-                                            pd.Series([symbol, 
-                                                    data[symbol]['quote']['latestPrice'], 
-                                                    data[symbol]['quote']['marketCap'], 
-                                                    'N/A'], 
-                                                    index = my_columns), 
-                                            ignore_index = True)
+            try:
+                final_dataframe = final_dataframe.append(
+                                                pd.Series([symbol, 
+                                                        data[symbol]['quote']['latestPrice'], 
+                                                        data[symbol]['quote']['marketCap'], 
+                                                        'N/A'], 
+                                                        index = my_columns), 
+                                                ignore_index = True)
+            except KeyError:
+                pass
             
     # take input from the website
     # portfolio_size = input('Enter the value of your portfolio:')
